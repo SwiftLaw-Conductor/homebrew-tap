@@ -10,7 +10,9 @@
 class Swiftlaw < Formula
   desc "A law firm in your CLI — agentic legal assistant (drafts, edits, redlines, researches)"
   homepage "https://github.com/SwiftLaw-Conductor/cli"
-  url "https://github.com/SwiftLaw-Conductor/cli/releases/download/v0.1.0/swiftlaw-0.1.0.tar.gz"
+  # Hosted on the PUBLIC tap repo's releases: the cli repo is INTERNAL, so its
+  # release assets aren't downloadable by Homebrew's unauthenticated fetch.
+  url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/v0.1.0/swiftlaw-0.1.0.tar.gz"
   sha256 "2954e6b68a9eeda3faa456b8897b661e352e9976215013c9547d20aa05481a06"
   version "0.1.0"
   license :cannot_represent # proprietary — © SwiftLaw
