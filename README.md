@@ -1,9 +1,17 @@
-# SwiftLaw Homebrew tap
+# SwiftLaw
 
+A law firm in your CLI. Install with either:
+
+### curl (recommended — no Homebrew or Xcode tools needed)
+```bash
+curl -fsSL https://raw.githubusercontent.com/SwiftLaw-Conductor/homebrew-tap/main/install.sh | bash
+swiftlaw init
+```
+
+### Homebrew
 ```bash
 brew install SwiftLaw-Conductor/tap/swiftlaw
 swiftlaw init
 ```
 
-Installs the SwiftLaw CLI (pulls in `node` + `uv` automatically). You'll need an
-Anthropic API key — `swiftlaw init` walks you through it.
+Both pull in Node + uv as needed. You'll need an Anthropic API key — `swiftlaw init` walks you through it.
