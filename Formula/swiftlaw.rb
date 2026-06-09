@@ -1,9 +1,10 @@
-# SwiftLaw Homebrew formula.
+# SwiftLaw Homebrew formula — SOURCE TEMPLATE.
 #
-# AUTO-GENERATED on release by .github/workflows/release-cli.yml in the
-# SwiftLaw-Prod repo (it compiles the per-platform binaries, publishes them as
-# a GitHub Release on THIS public tap repo, and rewrites this file with the new
-# version + per-arch sha256). Hand-edits will be overwritten on the next release.
+# The release workflow (.github/workflows/release-cli.yml) substitutes the
+# version + per-arch sha256 placeholders with the real release values and pushes
+# the result to the public tap repo (SwiftLaw-Conductor/homebrew-tap) as
+# Formula/swiftlaw.rb. Edit THIS file to change the formula; the tap copy is
+# generated. Placeholders are unique per arch so a simple sed can target each.
 #
 #   brew install SwiftLaw-Conductor/tap/swiftlaw
 #
@@ -11,8 +12,7 @@
 # no Python, no Anthropic key. The CLI authenticates to the SwiftLaw backend
 # with a personal CLI token and proxies model inference through it, so end users
 # need NO AWS credentials. Hosted on the PUBLIC tap repo's releases because the
-# app repo is private (Homebrew's unauthenticated fetch can't reach private
-# release assets).
+# app repo is private.
 class Swiftlaw < Formula
   desc "A law firm in your CLI — agentic legal assistant (drafts, edits, redlines)"
   homepage "https://github.com/SwiftLaw-Conductor/homebrew-tap"
@@ -22,24 +22,22 @@ class Swiftlaw < Formula
   on_macos do
     on_arm do
       url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/cli-v0.1.0/swiftlaw-darwin-arm64"
-      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+      sha256 "931e4897c1db179d82a4d873071d6dad15d5cb3b78a09de52963d8a25831658f"
     end
     on_intel do
       url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/cli-v0.1.0/swiftlaw-darwin-x64"
-      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+      sha256 "05f98c8222e3bae15e2709cc6d77bba2f6400ea05cbe9eebd28d2b0f343f8615"
     end
   end
 
   on_linux do
     on_intel do
       url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/cli-v0.1.0/swiftlaw-linux-x64"
-      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+      sha256 "3a97e23e076ce53a1badabc48bd9c964d2b2dd30313304bbf5ce65a543545816"
     end
   end
 
   def install
-    # Single pre-compiled binary; Homebrew stages it under its arch-specific
-    # name. Rename to `swiftlaw` on the user's PATH.
     bin.install Dir["swiftlaw-*"].first => "swiftlaw"
   end
 
@@ -57,7 +55,6 @@ class Swiftlaw < Formula
   end
 
   test do
-    # --version is hermetic (no network, no login), so this is a safe smoke test.
     assert_match version.to_s, shell_output("#{bin}/swiftlaw --version")
   end
 end
