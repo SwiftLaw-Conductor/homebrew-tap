@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 #
-# SwiftLaw CLI installer — no Homebrew, no Xcode Command Line Tools, no sudo.
+# SwiftLaw CLI installer — no Homebrew, no Node, no Python, no sudo.
 #
 #   curl -fsSL https://raw.githubusercontent.com/SwiftLaw-Conductor/homebrew-tap/main/install.sh | bash
 #
-# Downloads the latest self-contained release bundle and installs a `swiftlaw`
-# command into ~/.local/bin. Requires Node (runtime); auto-installs uv (the
-# Python document engine provisioner) if it's missing.
+# Downloads the latest self-contained native binary for your OS/arch and installs
+# a `swiftlaw` command into ~/.local/bin. The binary is fully standalone
+# (Bun-compiled) — nothing else to install. Authenticate with `swiftlaw login`.
 #
 set -euo pipefail
 
 TAP_REPO="SwiftLaw-Conductor/homebrew-tap"
-APP_DIR="${HOME}/.local/share/swiftlaw"
 BIN_DIR="${HOME}/.local/bin"
 BIN="${BIN_DIR}/swiftlaw"
 
@@ -21,49 +20,47 @@ die()   { printf '\033[1;31merror:\033[0m %s\n' "$1" >&2; exit 1; }
 
 # --- prerequisites -----------------------------------------------------------
 command -v curl >/dev/null 2>&1 || die "curl is required."
-command -v tar  >/dev/null 2>&1 || die "tar is required."
 
-NODE="$(command -v node || true)"
-if [ -z "${NODE}" ]; then
-  die "Node.js (>=20) is required but was not found.
-  Install it from https://nodejs.org/ (LTS) and re-run this installer."
-fi
+# --- detect platform → release asset name ------------------------------------
+OS="$(uname -s)"
+ARCH="$(uname -m)"
+case "${OS}" in
+  Darwin) case "${ARCH}" in
+            arm64)        ASSET="swiftlaw-darwin-arm64" ;;
+            x86_64)       ASSET="swiftlaw-darwin-x64" ;;
+            *) die "Unsupported macOS arch: ${ARCH}" ;;
+          esac ;;
+  Linux)  case "${ARCH}" in
+            x86_64|amd64) ASSET="swiftlaw-linux-x64" ;;
+            *) die "Unsupported Linux arch: ${ARCH} (only x86_64 is published).
+  On Windows use: winget install SwiftLaw.CLI" ;;
+          esac ;;
+  *) die "Unsupported OS: ${OS}.
+  On Windows use: winget install SwiftLaw.CLI" ;;
+esac
 
-# uv provisions the Python document engine on first run. Install it if absent
-# (official, self-contained, no sudo).
-if ! command -v uv >/dev/null 2>&1; then
-  info "Installing uv (Python engine provisioner)…"
-  curl -LsSf https://astral.sh/uv/install.sh | sh >/dev/null 2>&1 || \
-    warn "Could not auto-install uv. Install it from https://docs.astral.sh/uv/ before running 'swiftlaw init'."
-fi
-
-# --- resolve latest release --------------------------------------------------
+# --- resolve the latest release ----------------------------------------------
 info "Finding the latest SwiftLaw release…"
 TAG="$(curl -fsSL "https://api.github.com/repos/${TAP_REPO}/releases/latest" \
         | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)"
 [ -n "${TAG}" ] || die "Could not determine the latest release tag from ${TAP_REPO}."
-VERSION="${TAG#v}"
-URL="https://github.com/${TAP_REPO}/releases/download/${TAG}/swiftlaw-${VERSION}.tar.gz"
+VERSION="${TAG#cli-v}"
+URL="https://github.com/${TAP_REPO}/releases/download/${TAG}/${ASSET}"
 
 # --- download + install ------------------------------------------------------
 TMP="$(mktemp -d)"
 trap 'rm -rf "${TMP}"' EXIT
-info "Downloading swiftlaw ${VERSION}…"
-curl -fSL "${URL}" -o "${TMP}/swiftlaw.tar.gz" || die "Download failed: ${URL}"
-
-info "Installing to ${APP_DIR}…"
-rm -rf "${APP_DIR}"; mkdir -p "${APP_DIR}"
-tar -xzf "${TMP}/swiftlaw.tar.gz" -C "${APP_DIR}" --strip-components=1
+info "Downloading ${ASSET} (${VERSION})…"
+curl -fSL "${URL}" -o "${TMP}/swiftlaw" || die "Download failed: ${URL}"
 
 mkdir -p "${BIN_DIR}"
-cat > "${BIN}" <<EOF
-#!/bin/bash
-exec "${NODE}" "${APP_DIR}/dist/index.js" "\$@"
-EOF
-chmod 0755 "${BIN}"
+install -m 0755 "${TMP}/swiftlaw" "${BIN}"
 
-# --- PATH check + done -------------------------------------------------------
-printf '\033[1;32m✓ Installed swiftlaw %s\033[0m\n' "${VERSION}"
+# --- verify + PATH check + done ----------------------------------------------
+INSTALLED="$("${BIN}" --version 2>/dev/null || true)"
+[ -n "${INSTALLED}" ] || die "Installed binary failed to run (${BIN})."
+printf '\033[1;32m✓ Installed swiftlaw %s → %s\033[0m\n' "${INSTALLED}" "${BIN}"
+
 case ":${PATH}:" in
   *":${BIN_DIR}:"*) : ;;
   *) warn "${BIN_DIR} is not on your PATH. Add this to your shell profile:
@@ -71,6 +68,5 @@ case ":${PATH}:" in
 esac
 echo
 echo "Get started:"
-echo "  swiftlaw init                       # provision the engine + set your API key"
-echo "  swiftlaw \"draft an NDA for ...\"      # one-shot"
-echo "  swiftlaw                            # interactive"
+echo "  swiftlaw login        # paste an sl_… token (tryswiftlaw.com/app → avatar → CLI Tokens)"
+echo "  swiftlaw              # interactive"

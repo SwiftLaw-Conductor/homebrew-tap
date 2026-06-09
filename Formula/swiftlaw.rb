@@ -1,53 +1,63 @@
 # SwiftLaw Homebrew formula.
 #
-# Source of truth lives in the CLI repo at packaging/homebrew/swiftlaw.rb.
-# On each release, copy this file to the tap repo
-# (SwiftLaw-Conductor/homebrew-tap) at Formula/swiftlaw.rb with the url + sha256
-# updated to the new release. Users then install with:
+# AUTO-GENERATED on release by .github/workflows/release-cli.yml in the
+# SwiftLaw-Prod repo (it compiles the per-platform binaries, publishes them as
+# a GitHub Release on THIS public tap repo, and rewrites this file with the new
+# version + per-arch sha256). Hand-edits will be overwritten on the next release.
 #
 #   brew install SwiftLaw-Conductor/tap/swiftlaw
 #
+# The binaries are self-contained native executables (Bun-compiled) — no Node,
+# no Python, no Anthropic key. The CLI authenticates to the SwiftLaw backend
+# with a personal CLI token and proxies model inference through it, so end users
+# need NO AWS credentials. Hosted on the PUBLIC tap repo's releases because the
+# app repo is private (Homebrew's unauthenticated fetch can't reach private
+# release assets).
 class Swiftlaw < Formula
-  desc "A law firm in your CLI — agentic legal assistant (drafts, edits, redlines, researches)"
-  homepage "https://github.com/SwiftLaw-Conductor/cli"
-  # Hosted on the PUBLIC tap repo's releases: the cli repo is INTERNAL, so its
-  # release assets aren't downloadable by Homebrew's unauthenticated fetch.
-  url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/v0.1.0/swiftlaw-0.1.0.tar.gz"
-  sha256 "2954e6b68a9eeda3faa456b8897b661e352e9976215013c9547d20aa05481a06"
+  desc "A law firm in your CLI — agentic legal assistant (drafts, edits, redlines)"
+  homepage "https://github.com/SwiftLaw-Conductor/homebrew-tap"
   version "0.1.0"
   license :cannot_represent # proprietary — © SwiftLaw
 
-  depends_on "node"
-  depends_on "uv"
+  on_macos do
+    on_arm do
+      url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/cli-v0.1.0/swiftlaw-darwin-arm64"
+      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+    end
+    on_intel do
+      url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/cli-v0.1.0/swiftlaw-darwin-x64"
+      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+    end
+  end
+
+  on_linux do
+    on_intel do
+      url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/cli-v0.1.0/swiftlaw-linux-x64"
+      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+    end
+  end
 
   def install
-    # The release tarball is a self-contained bundle: dist/, assets/,
-    # package.json, and a production node_modules (incl. @swiftlaw/core).
-    libexec.install Dir["*"]
-
-    # Wrapper that runs the bundled CLI on the brewed Node so it never depends
-    # on whatever Node the user may (or may not) have on PATH.
-    (bin/"swiftlaw").write <<~SH
-      #!/bin/bash
-      exec "#{Formula["node"].opt_bin}/node" "#{libexec}/dist/index.js" "$@"
-    SH
-    chmod 0755, bin/"swiftlaw"
+    # Single pre-compiled binary; Homebrew stages it under its arch-specific
+    # name. Rename to `swiftlaw` on the user's PATH.
+    bin.install Dir["swiftlaw-*"].first => "swiftlaw"
   end
 
   def caveats
     <<~EOS
-      SwiftLaw needs an Anthropic API key and provisions a Python document
-      engine on first run (via uv, installed as a dependency). Get started:
+      Authenticate the CLI with a personal token, then you're set:
 
-        swiftlaw init
+        swiftlaw login        # paste an sl_… token from the web app
+                              # (tryswiftlaw.com/app → avatar → CLI Tokens)
+        swiftlaw              # interactive
 
-      Keys live in ~/.swiftlaw/config.json (or the ANTHROPIC_API_KEY env var).
+      No AWS, Node, or API keys needed — inference is proxied through the
+      SwiftLaw backend. The token lives in ~/.swiftlaw/config.json.
     EOS
   end
 
   test do
-    # --version is handled locally (no API call, no engine bootstrap), so this
-    # is a safe, hermetic smoke test of the bundle + wrapper.
+    # --version is hermetic (no network, no login), so this is a safe smoke test.
     assert_match version.to_s, shell_output("#{bin}/swiftlaw --version")
   end
 end
