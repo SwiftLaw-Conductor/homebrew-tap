@@ -45,10 +45,10 @@ class Swiftlaw < Formula
     <<~EOS
       Get started:
 
-        swiftlaw login   # paste a token from tryswiftlaw.com/app/settings/cli-tokens
+        swiftlaw login   # paste a token from https://tryswiftlaw.com/app/settings/cli-tokens
         swiftlaw         # start
 
-      No AWS, Node, or API keys needed.
+      No AWS, Node, or API keys needed. Token page is admin-only for now.
     EOS
   end
 
