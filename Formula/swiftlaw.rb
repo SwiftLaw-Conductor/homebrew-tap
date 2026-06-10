@@ -16,24 +16,24 @@
 class Swiftlaw < Formula
   desc "A law firm in your CLI — agentic legal assistant (drafts, edits, redlines)"
   homepage "https://github.com/SwiftLaw-Conductor/homebrew-tap"
-  version "0.5.1"
+  version "0.5.2"
   license :cannot_represent # proprietary — © SwiftLaw
 
   on_macos do
     on_arm do
-      url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/cli-v0.5.1/swiftlaw-darwin-arm64"
-      sha256 "682d129d3924616e6f111ca83f9cfca8e02a97697b47c6a054cd336415810091"
+      url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/cli-v0.5.2/swiftlaw-darwin-arm64"
+      sha256 "49ddce0e4eace64bbac05b4371d8e05cd0c93d8377ea66d68d2bb7aba161c491"
     end
     on_intel do
-      url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/cli-v0.5.1/swiftlaw-darwin-x64"
-      sha256 "7510ec2c09559182fb2cc26d7416c5fa23c08ab8f6a56d073e80ef8be0ea2042"
+      url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/cli-v0.5.2/swiftlaw-darwin-x64"
+      sha256 "286e470f36810ac086732e1ba4b187c0768e1ba76f1b9578abb781426a3c37b4"
     end
   end
 
   on_linux do
     on_intel do
-      url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/cli-v0.5.1/swiftlaw-linux-x64"
-      sha256 "2b673111528e4223b496f8f26d86f37ba9cb3f77f7a58f911162e8e80bcf67c9"
+      url "https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/download/cli-v0.5.2/swiftlaw-linux-x64"
+      sha256 "d23b87913ef452e15e4c0a49a26b09b1fa875a9e4141e5c76dd99c999fcf5dcd"
     end
   end
 
