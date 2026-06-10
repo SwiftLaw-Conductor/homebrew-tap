@@ -43,14 +43,12 @@ class Swiftlaw < Formula
 
   def caveats
     <<~EOS
-      Authenticate the CLI with a personal token, then you're set:
+      Get started:
 
-        swiftlaw login        # paste an sl_… token from the web app
-                              # (tryswiftlaw.com/app → avatar → CLI Tokens)
-        swiftlaw              # interactive
+        swiftlaw login   # paste a token from tryswiftlaw.com/app/settings/cli-tokens
+        swiftlaw         # start
 
-      No AWS, Node, or API keys needed — inference is proxied through the
-      SwiftLaw backend. The token lives in ~/.swiftlaw/config.json.
+      No AWS, Node, or API keys needed.
     EOS
   end
 
