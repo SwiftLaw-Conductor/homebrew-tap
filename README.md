@@ -19,11 +19,19 @@ brew install SwiftLaw-Conductor/tap/swiftlaw
 swiftlaw login
 ```
 
-### Windows — winget
-```powershell
-winget install SwiftLaw.CLI
-swiftlaw login
-```
+### Windows — direct download
+1. Download `swiftlaw-windows-x64.exe` from the
+   [latest release](https://github.com/SwiftLaw-Conductor/homebrew-tap/releases/latest)
+   (checksums in `SHA256SUMS` alongside it).
+2. Rename it to `swiftlaw.exe` and put it in a folder on your `PATH`
+   (e.g. `%LOCALAPPDATA%\Programs\swiftlaw\`).
+3. ```powershell
+   swiftlaw login
+   ```
+
+A winget package (`winget install SwiftLaw.CLI`) has been submitted to
+[winget-pkgs](https://github.com/microsoft/winget-pkgs) and will be the
+preferred install once accepted.
 
 ## Getting a token
 
